@@ -1,2 +1,2 @@
 # jenkins-pipeline
-Jenkins pipeline
+Jenkins pipeline-demo
