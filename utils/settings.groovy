@@ -1,14 +1,5 @@
 #!/usr/bin/env groovy
 
-#!/usr/bin/env groovy
-
-// permission list
-PERMISSION_LIST = [
-    "dev" : ["sam", "alex"],
-    "test": ["sam", "alex"],
-    "pre" : ["sam", "alex", "simon"]
-]
-
 // binary path
 // JAVA_PATH    = ""
 JAVA_VERSION = "jdk1.8.0_181"
