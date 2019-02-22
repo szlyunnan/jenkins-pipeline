@@ -1,5 +1,5 @@
 FROM nginx:1.12
-COPY . /usr/share/nginx/html
+COPY dist /usr/share/nginx/html
 RUN ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo Asia/Shanghai > /etc/timezone
 RUN chown -R nginx:nginx /usr/share/nginx/html/
