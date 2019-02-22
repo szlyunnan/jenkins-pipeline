@@ -39,25 +39,18 @@ KUBE_PRE     = "pro"
 GITLAB_ID    = ""
 
 // docker image
-JAVA_IMG     = "test.cc.co/base/openjdk:v8"
-NODEJS_IMG   = "test.cc.co/base/nodejs:8.9.4-pm2-docker"
-VUE_IMG      = "test.cc.co/base/nginx:v1.14"
-PYTHON_IMG   = "test.cc.co/base/python:v3.6"
+JAVA_IMG     = "test.cc.cq/base/openjdk:v8"
+NODEJS_IMG   = "test.cc.cq/base/nodejs:8.9.4-pm2-docker"
+VUE_IMG      = "test.cc.cq/base/nginx:v1.14"
+PYTHON_IMG   = "test.cc.cq/base/python:v3.6"
 
 // docker lang
 DOCKER_LANG  = "C.UTF-8"
 
 // docker
 TIME_ZONE           = "Asia/Shanghai"
-if ("${versionno}" == "" ) {
-    BUILD_VERSION   = "v1.0"
-} else {
-    BUILD_VERSION   = "${versionno}"
-}
-HARBOR_URL          = "test.cc.co"
-HARBOR_REPO_PREFIX  = baseInfo.get("harborprefix")
-FULL_IMAGE_NAME     = "${HARBOR_REPO_PREFIX}/${JOB_NAME}:${BUILD_VERSION}.${BUILD_NUMBER}"
-DOCKER_IMAGES       = "${HARBOR_URL}/${FULL_IMAGE_NAME}"
+
+DOCKER_IMAGES       = "test.cc.cq/platform/platform-client:v1.0"
 
 // slave node info 
 //      sonarqube

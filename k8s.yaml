@@ -1,3 +1,76 @@
 ---
-apiVersion: v1 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: docker-login
+  namespace: platform
+data:
+  .dockerconfigjson: eqc123ogewoJCSJoYXJi9JWd23dpcy5jbiI6IHsKCQkJImF1dGgiOiAiYW5kcGN6cEtkMmx6TVRJek5BPT0iCgkJfQoJfSwKCSJIdHRwSGVhZGVycyI6IHsKCQkiVXNlci1BZ2VudCI6ICJEb2NrZXItQ2xpZW50LzE4LjAzLjEtY2UgKGxpbnV4KSIKCX0KfQ==
+type: kubernetes.io/dockerconfigjson
 
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: platform
+   labels:
+     name: platform
+
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: platform-client
+  namespace: platform
+  labels:
+    app: platform-client
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: platform-client
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: platform-client
+        version: v1
+    spec:
+      containers:
+      - name: platform
+        image: test.cc.cq/platform/platform-client:v1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: platform
+      restartPolicy: Always
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: platform-client
+  namespace: platform
+spec:
+  selector:
+    app: platform-client
+  ports:
+  - port: 80
+    targetPort: 80
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: platform-client
+  namespace: platform
+spec:
+  rules:
+  - host: www.cc.cq
+    http:
+      paths:
+      - backend:
+          serviceName: platform-client
+          servicePort: 80
