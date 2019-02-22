@@ -1,15 +1,22 @@
+#!/usr/bin/env groovy
+
+settingsFile   = "settings.groovy"
+permissionFile = "permission.groovy"
+messageFile    = "message.groovy"
+kubectlFile    = "kubectl.groovy"
+gitFile        = "gitBranch.groovy"
+buildFile      = "build.groovy"
+mainFile       = "main.groovy"
+
 node('master'){
-  stage('build'){
-    sh 'echo build'
-  }
-  stage('docker image'){
-    sh 'echo docker image'
-  }
-  stage('docker push'){
-    sh 'echo push docker image'
-  }
-  stage('deploy'){
-    sh 'echo deploy'
-  }
+  settingsLoad   = load("${settingsFile}")
+  permissionLoad = load("${permissionFile}")
+  messageLoad    = load("${messageFile}")
+  kubectlLoad    = load("${kubectlFile}")
+  gitLoad        = load("${gitFile}")
+  buildLoad      = load("${buildFile}")
+  mainLoad       = load("${mainFile}") 
+
+  mainLoad.RunMain()
 }
 

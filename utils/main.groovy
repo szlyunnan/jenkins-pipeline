@@ -1,14 +1,8 @@
 #!/usr/bin/env groovy
 
-def RunStageNotPermission(tipStr) {
+def RunMain() {
     stage('Check Env') {
-        println("${tipStr}")
-    }
-}
-
-def RunStagePermission(BuildCode, BuildImage, PullCode) {
-    stage('Check Env') {
-        println(PrintEvn())
+        println(messageLoad.PrintEvn())
     }
     stage("Preparation") {
         if (SKIP_CLEAN == false) {
@@ -18,7 +12,7 @@ def RunStagePermission(BuildCode, BuildImage, PullCode) {
         }
     }
     stage('Pull Code') {
-        PullCode()
+        gitLoad.CodePull()
         /*
         if ("${codescan}" != "") {
             node("${SONARQUBE_SERVER}") {
@@ -28,12 +22,7 @@ def RunStagePermission(BuildCode, BuildImage, PullCode) {
         */
     }
     stage('Build Code') {
-        if ("${APP_NAME}" == "micro-workflow-modeler") {
-            dir(path: "${WORKSPACE}") {
-                sh "/bin/cp /root/.cicd-shell/files/app-cfg.js src/main/resources/static/editor-app/app-cfg.js" 
-            } 
-        }
-        BuildCode()
+        buildLoad.BuildVue()
         /*
         if ("${codescan}" != "") {
             node("${SONARQUBE_SERVER}") {
@@ -56,7 +45,6 @@ def RunStagePermission(BuildCode, BuildImage, PullCode) {
     }
     stage('Build Image') {
         dir(path: "${WORKSPACE}") {
-            BuildImage()
             sh "docker build . --force-rm --no-cache -t ${DOCKER_IMAGES}" 
         }
     }
@@ -66,58 +54,12 @@ def RunStagePermission(BuildCode, BuildImage, PullCode) {
     }
     stage('Deploy') {
         if (SKIP_DEPLOY == false) {
-            def kubeconfig = KubeControl()
+            def kubeconfig = kubectlLoad.KubeControl()
             sh "kubectl config use-context ${kubeconfig}"
-            
-            def domain = baseInfo.get("domain")
-            if ("${domain}") {
-                sh "bash ${shellPath} ${APP_NAME} ${containerPort} ${servicePort} ${nameSpaces} ${DOCKER_IMAGES} ${domain}"
-            } else {
-                sh "bash ${shellPath} ${APP_NAME} ${containerPort} ${servicePort} ${nameSpaces} ${DOCKER_IMAGES}"
-            }
+            sh "kubectl apply k8s.yaml"
         } else {
             println("Deploy to k8s")
         }
-    }
-}
-
-def RunMainStage(BuildCode, BuildImage) {
-    wrap([$class: 'BuildUser']) { 
-        if ("${enviroment}" == "pre") {
-            if (BUILD_USER_ID in PERMISSION_LIST["pre"]) {
-                RunStagePermission(BuildCode, BuildImage, this.&PullSingle)
-            } else {
-                RunStageNotPermission("${TIP_PRE}")
-            } 
-        } else if ("${enviroment}" == "test") {
-            if (BUILD_USER_ID in PERMISSION_LIST["test"]) {
-                RunStagePermission(BuildCode, BuildImage, this.&PullSingle)
-            } else {
-                RunStageNotPermission("${TIP_TEST}")
-            }
-        } else {
-            RunStagePermission(BuildCode, BuildImage, this.&PullSingle)
-        } 
-    }
-}
-
-def RunMainScaffold(BuildCode, BuildImage) {
-    wrap([$class: 'BuildUser']) { 
-        if ("${enviroment}" == "pre") {
-            if (BUILD_USER_ID in PERMISSION_LIST["pre"]) {
-                RunStagePermission(BuildCode, BuildImage, this.&PullMultiple)
-            } else {
-                RunStageNotPermission("${TIP_PRE}")
-            } 
-        } else if ("${enviroment}" == "test") {
-            if (BUILD_USER_ID in PERMISSION_LIST["test"]) {
-                RunStagePermission(BuildCode, BuildImage, this.&PullMultiple)
-            } else {
-                RunStageNotPermission("${TIP_TEST}")
-            }
-        } else {
-            RunStagePermission(BuildCode, BuildImage, this.&PullMultiple)
-        } 
     }
 }
 

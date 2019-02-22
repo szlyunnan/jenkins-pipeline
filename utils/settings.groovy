@@ -1,18 +1,22 @@
 #!/usr/bin/env groovy
 
+// email list
+EMAIL_LIST =  [
+    "test1@cc.co",
+    "text2@cc.co",
+    "test3@cc.co",
+    "test4@cc.co",
+]
+
 // binary path
-// JAVA_PATH    = ""
-JAVA_VERSION = "jdk1.8.0_181"
-MVN_PATH     = "/usr/local/maven/bin"
-MVN_VERSION  = "MAVEN3.5.4"
 NODE_PATH    = "/usr/local/node-v8.9.4-linux-x64/bin" 
 
 // app info
 APP_NAME     = "${JOB_NAME}"[4..-1]
 
 // skip action
-// SKIP_TEST    = false
-// SKIP_SONAR   = false
+SKIP_TEST    = false
+SKIP_SONAR   = false
 SKIP_CLEAN   = false
 SKIP_DEPLOY  = false
 
